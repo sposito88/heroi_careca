@@ -1,0 +1,453 @@
+/* Reset e configurações globais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* Tela de carregamento */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    color: white;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.loading-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.loading-bar {
+    width: 300px;
+    height: 20px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 1rem auto;
+}
+
+.loading-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #f39c12, #e74c3c);
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 10px;
+}
+
+/* Container principal */
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Canvas do jogo */
+#game-canvas {
+    border: 3px solid #2c3e50;
+    border-radius: 8px;
+    background: #87CEEB;
+    max-width: 100%;
+    max-height: 100%;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+/* Interface do jogo */
+#game-ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* HUD superior */
+#hud {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.7);
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    pointer-events: auto;
+}
+
+.hud-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.heart {
+    font-size: 1.5rem;
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.5));
+}
+
+.heart.lost {
+    opacity: 0.3;
+    filter: grayscale(100%);
+}
+
+/* Controles mobile */
+#mobile-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    display: none;
+    pointer-events: auto;
+}
+
+.control-group {
+    position: absolute;
+    bottom: 0;
+}
+
+.left-controls {
+    left: 0;
+    display: flex;
+    gap: 10px;
+}
+
+.right-controls {
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.center-controls {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 120px;
+}
+
+.control-btn {
+    background: rgba(0,0,0,0.7);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    touch-action: manipulation;
+}
+
+.direction-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+}
+
+.action-btn {
+    width: 70px;
+    height: 70px;
+    font-size: 1rem;
+}
+
+.pause-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+}
+
+.control-btn:hover,
+.control-btn:focus {
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.05);
+}
+
+.control-btn:active {
+    background: rgba(255,255,255,0.4);
+    transform: scale(0.95);
+}
+
+.control-btn.pressed {
+    background: rgba(255,255,255,0.4);
+    transform: scale(0.95);
+}
+
+/* Menus */
+.menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    pointer-events: auto;
+}
+
+.menu.hidden {
+    display: none;
+}
+
+.menu-content {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    max-width: 90%;
+    max-height: 90%;
+    overflow-y: auto;
+}
+
+.menu-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    color: #f39c12;
+}
+
+.menu-content h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    color: #3498db;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #bdc3c7;
+    margin-bottom: 2rem;
+}
+
+.menu-btn {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 0.5rem auto;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.menu-btn:hover,
+.menu-btn:focus {
+    background: linear-gradient(135deg, #2980b9 0%, #1f5f8b 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.menu-btn:active {
+    transform: translateY(0);
+}
+
+.menu-btn.primary {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.menu-btn.primary:hover,
+.menu-btn.primary:focus {
+    background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+}
+
+/* Instruções e créditos */
+.instructions,
+.credits {
+    text-align: left;
+    margin: 1rem 0;
+}
+
+.instructions h3 {
+    color: #f39c12;
+    margin: 1rem 0 0.5rem 0;
+}
+
+.instructions ul {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.instructions li {
+    margin-bottom: 0.5rem;
+}
+
+.credits p {
+    margin-bottom: 0.5rem;
+}
+
+/* Configurações */
+.setting-item {
+    margin: 1rem 0;
+    text-align: left;
+}
+
+.setting-item label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.setting-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+.setting-item input[type="range"] {
+    flex: 1;
+    margin-left: 10px;
+}
+
+/* Pontuação final */
+#final-score {
+    font-size: 1.5rem;
+    color: #f39c12;
+    margin: 1rem 0;
+    font-weight: bold;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    #mobile-controls {
+        display: block;
+    }
+    
+    .menu-content h1 {
+        font-size: 2rem;
+    }
+    
+    .menu-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    #hud {
+        font-size: 1rem;
+        padding: 8px 15px;
+    }
+    
+    .loading-content h1 {
+        font-size: 2rem;
+    }
+    
+    .loading-bar {
+        width: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-content {
+        padding: 1.5rem;
+    }
+    
+    .menu-content h1 {
+        font-size: 1.8rem;
+    }
+    
+    .control-btn {
+        font-size: 1rem;
+    }
+    
+    .direction-btn {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .action-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 0.9rem;
+    }
+    
+    #hud {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+    }
+}
+
+/* Acessibilidade */
+.high-contrast {
+    filter: contrast(150%) brightness(120%);
+}
+
+.reduce-motion * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+}
+
+/* Animações */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.menu-btn.primary {
+    animation: pulse 2s infinite;
+}
+
+.reduce-motion .menu-btn.primary {
+    animation: none;
+}
+
+/* Estados de foco para acessibilidade */
+button:focus,
+input:focus {
+    outline: 3px solid #f39c12;
+    outline-offset: 2px;
+}
+
+/* Prevenção de zoom em iOS */
+input[type="range"] {
+    font-size: 16px;
+}
+
+/* Otimizações de performance */
+#game-canvas {
+    will-change: transform;
+}
+
+.control-btn {
+    will-change: transform, background-color;
+}
+
