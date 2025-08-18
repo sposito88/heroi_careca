@@ -3,182 +3,768 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Herói Careca vs. Gorila do Mal - Jogo de plataforma 2D">
     <title>Herói Careca vs. Gorila do Mal</title>
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.webmanifest">
-    <meta name="theme-color" content="#2196F3">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/img/favicon.png">
-    
-    <!-- Estilos -->
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #87CEEB, #98FB98);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-container {
+            background: #2C3E50;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #34495E;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .hearts {
+            display: flex;
+            gap: 5px;
+        }
+
+        .heart {
+            color: #E74C3C;
+            font-size: 20px;
+        }
+
+        .heart.lost {
+            color: #7F8C8D;
+        }
+
+        #game-canvas {
+            border: 3px solid #34495E;
+            border-radius: 5px;
+            display: block;
+            background: #87CEEB;
+        }
+
+        .menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(44, 62, 80, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            min-width: 400px;
+        }
+
+        .menu h1 {
+            color: #F39C12;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .menu h2 {
+            color: #BDC3C7;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+
+        .menu button {
+            background: linear-gradient(45deg, #E74C3C, #C0392B);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 200px;
+        }
+
+        .menu button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .menu button:nth-child(4) {
+            background: linear-gradient(45deg, #3498DB, #2980B9);
+        }
+
+        .menu button:nth-child(5) {
+            background: linear-gradient(45deg, #95A5A6, #7F8C8D);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .mobile-controls {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .mobile-controls button {
+            background: rgba(52, 73, 94, 0.8);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 50%;
+            font-size: 20px;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-controls {
+                display: flex;
+            }
+            
+            .game-container {
+                padding: 10px;
+                margin: 10px;
+            }
+            
+            .menu {
+                min-width: 300px;
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Tela de carregamento -->
-    <div id="loading-screen">
-        <div class="loading-content">
-            <h1>Herói Careca vs. Gorila do Mal</h1>
-            <div class="loading-bar">
-                <div class="loading-progress"></div>
+    <div class="game-container">
+        <!-- HUD -->
+        <div class="hud">
+            <div class="hearts">
+                <span class="heart">❤️</span>
+                <span class="heart">❤️</span>
+                <span class="heart">❤️</span>
             </div>
-            <p>Carregando...</p>
-        </div>
-    </div>
-
-    <!-- Container principal do jogo -->
-    <div id="game-container">
-        <!-- Canvas do jogo -->
-        <canvas id="game-canvas"></canvas>
-        
-        <!-- Interface do jogo -->
-        <div id="game-ui">
-            <!-- HUD superior -->
-            <div id="hud">
-                <div class="hud-section">
-                    <div id="lives">
-                        <span class="heart">❤️</span>
-                        <span class="heart">❤️</span>
-                        <span class="heart">❤️</span>
-                    </div>
-                </div>
-                <div class="hud-section">
-                    <div id="score">Pontos: <span id="score-value">0</span></div>
-                </div>
-                <div class="hud-section">
-                    <div id="pudding-count">Pudins: <span id="pudding-value">3</span></div>
-                </div>
-            </div>
-
-            <!-- Controles mobile -->
-            <div id="mobile-controls">
-                <div class="control-group left-controls">
-                    <button id="btn-left" class="control-btn direction-btn">←</button>
-                    <button id="btn-right" class="control-btn direction-btn">→</button>
-                </div>
-                <div class="control-group right-controls">
-                    <button id="btn-jump" class="control-btn action-btn">PULAR</button>
-                    <button id="btn-banana" class="control-btn action-btn">🍌</button>
-                    <button id="btn-pudding" class="control-btn action-btn">🍮</button>
-                </div>
-                <div class="control-group center-controls">
-                    <button id="btn-pause" class="control-btn pause-btn">⏸️</button>
-                </div>
-            </div>
+            <div>Pontos: <span id="score">0</span></div>
+            <div>Pudins: <span id="puddings">3</span></div>
         </div>
 
-        <!-- Menu de pausa -->
-        <div id="pause-menu" class="menu hidden">
-            <div class="menu-content">
-                <h2>Jogo Pausado</h2>
-                <button id="btn-resume" class="menu-btn">Continuar</button>
-                <button id="btn-restart" class="menu-btn">Reiniciar</button>
-                <button id="btn-settings" class="menu-btn">Configurações</button>
-            </div>
-        </div>
+        <!-- Canvas do Jogo -->
+        <canvas id="game-canvas" width="800" height="600"></canvas>
 
-        <!-- Menu de configurações -->
-        <div id="settings-menu" class="menu hidden">
-            <div class="menu-content">
-                <h2>Configurações</h2>
-                <div class="setting-item">
-                    <label>
-                        <input type="checkbox" id="reduce-motion"> Reduzir movimento
-                    </label>
-                </div>
-                <div class="setting-item">
-                    <label>
-                        <input type="checkbox" id="high-contrast"> Alto contraste
-                    </label>
-                </div>
-                <div class="setting-item">
-                    <label>
-                        Volume: <input type="range" id="volume-slider" min="0" max="100" value="50">
-                    </label>
-                </div>
-                <button id="btn-back-settings" class="menu-btn">Voltar</button>
-            </div>
-        </div>
-
-        <!-- Menu de game over -->
-        <div id="game-over-menu" class="menu hidden">
-            <div class="menu-content">
-                <h2 id="game-over-title">Game Over</h2>
-                <p id="game-over-message">Tente novamente!</p>
-                <div id="final-score">Pontuação Final: <span id="final-score-value">0</span></div>
-                <button id="btn-restart-game" class="menu-btn">Jogar Novamente</button>
-                <button id="btn-main-menu" class="menu-btn">Menu Principal</button>
-            </div>
-        </div>
-
-        <!-- Menu principal -->
+        <!-- Menu Principal -->
         <div id="main-menu" class="menu">
-            <div class="menu-content">
-                <h1>Herói Careca vs. Gorila do Mal</h1>
-                <p class="subtitle">Resgate na Torre</p>
-                <button id="btn-start-game" class="menu-btn primary">Iniciar Jogo</button>
-                <button id="btn-instructions" class="menu-btn">Instruções</button>
-                <button id="btn-credits" class="menu-btn">Créditos</button>
-            </div>
+            <h1>Herói Careca vs. Gorila do Mal</h1>
+            <h2>Resgate na Torre</h2>
+            <button onclick="startGame()">🎮 Iniciar Jogo</button>
+            <button onclick="showInstructions()">📖 Instruções</button>
+            <button onclick="showCredits()">👨‍💻 Créditos</button>
         </div>
 
-        <!-- Menu de instruções -->
+        <!-- Menu de Instruções -->
         <div id="instructions-menu" class="menu hidden">
-            <div class="menu-content">
-                <h2>Como Jogar</h2>
-                <div class="instructions">
-                    <h3>Controles (Teclado):</h3>
-                    <ul>
-                        <li>← → ou A D: Mover</li>
-                        <li>Espaço: Pular (duplo pulo disponível)</li>
-                        <li>K: Arremessar banana</li>
-                        <li>L: Arremessar pudim</li>
-                        <li>P: Pausar</li>
-                    </ul>
-                    <h3>Objetivo:</h3>
-                    <p>Ajude o Herói Careca a resgatar a princesa na torre! Colete chaves, derrote inimigos com bananas e pudins, e enfrente o Gorila do Mal!</p>
-                    <h3>Dicas:</h3>
-                    <ul>
-                        <li>Bananas têm munição infinita</li>
-                        <li>Pudins são limitados mas criam áreas escorregadias</li>
-                        <li>Você tem 3 vidas - cuidado com os inimigos!</li>
-                    </ul>
-                </div>
-                <button id="btn-back-instructions" class="menu-btn">Voltar</button>
+            <h1>Como Jogar</h1>
+            <div style="text-align: left; margin: 20px 0;">
+                <h3>🎮 Controles:</h3>
+                <p>← → ou A D: Mover</p>
+                <p>Espaço: Pular (duplo pulo disponível)</p>
+                <p>K: Arremessar banana 🍌</p>
+                <p>L: Arremessar pudim 🍮</p>
+                <p>P: Pausar</p>
+                
+                <h3>🎯 Objetivo:</h3>
+                <p>Ajude o Herói Careca a resgatar a princesa na torre!</p>
+                <p>Colete chaves, derrote inimigos e enfrente o Gorila do Mal!</p>
+                
+                <h3>💡 Dicas:</h3>
+                <p>• Bananas têm munição infinita</p>
+                <p>• Pudins criam áreas escorregadias</p>
+                <p>• Você tem 3 vidas - cuidado!</p>
             </div>
+            <button onclick="showMainMenu()">🔙 Voltar</button>
         </div>
 
-        <!-- Menu de créditos -->
+        <!-- Menu de Créditos -->
         <div id="credits-menu" class="menu hidden">
-            <div class="menu-content">
-                <h2>Créditos</h2>
-                <div class="credits">
-                    <p><strong>Desenvolvido por:</strong> Manus.ia</p>
-                    <p><strong>Arte:</strong> Pixel Art Original</p>
-                    <p><strong>Música:</strong> Trilha Sonora Original</p>
-                    <p><strong>Tecnologia:</strong> HTML5 + JavaScript</p>
-                    <br>
-                    <p>Obrigado por jogar!</p>
-                </div>
-                <button id="btn-back-credits" class="menu-btn">Voltar</button>
+            <h1>Créditos</h1>
+            <div style="margin: 20px 0;">
+                <p><strong>Desenvolvido por:</strong> Manus.ia</p>
+                <p><strong>Arte:</strong> Pixel Art Original</p>
+                <p><strong>Tecnologia:</strong> HTML5 + JavaScript</p>
+                <p><strong>Versão:</strong> 1.0.0</p>
             </div>
+            <p>Obrigado por jogar! 🎮</p>
+            <button onclick="showMainMenu()">🔙 Voltar</button>
+        </div>
+
+        <!-- Menu de Game Over -->
+        <div id="game-over-menu" class="menu hidden">
+            <h1>Game Over</h1>
+            <p>Tente novamente!</p>
+            <p>Pontuação Final: <span id="final-score">0</span></p>
+            <button onclick="startGame()">🔄 Jogar Novamente</button>
+            <button onclick="showMainMenu()">🏠 Menu Principal</button>
+        </div>
+
+        <!-- Menu de Vitória -->
+        <div id="victory-menu" class="menu hidden">
+            <h1>🎉 Vitória!</h1>
+            <p>Parabéns! Você derrotou o Gorila do Mal e resgatou a princesa!</p>
+            <p>Pontuação Final: <span id="victory-score">0</span></p>
+            <button onclick="startGame()">🔄 Jogar Novamente</button>
+            <button onclick="showMainMenu()">🏠 Menu Principal</button>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="js/game.js"></script>
-    
-    <!-- Service Worker para PWA -->
+    <!-- Controles Mobile -->
+    <div class="mobile-controls">
+        <button onmousedown="mobileControl('left', true)" onmouseup="mobileControl('left', false)" ontouchstart="mobileControl('left', true)" ontouchend="mobileControl('left', false)">←</button>
+        <button onmousedown="mobileControl('right', true)" onmouseup="mobileControl('right', false)" ontouchstart="mobileControl('right', true)" ontouchend="mobileControl('right', false)">→</button>
+        <button onclick="mobileControl('jump')">⬆️</button>
+        <button onclick="mobileControl('banana')">🍌</button>
+        <button onclick="mobileControl('pudding')">🍮</button>
+    </div>
+
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => console.log('SW registrado'))
-                    .catch(error => console.log('SW falhou'));
+        // Variáveis globais do jogo
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let gameState = 'menu';
+        let score = 0;
+        let lives = 3;
+        let puddings = 3;
+        let level = 1;
+        
+        // Jogador
+        const player = {
+            x: 100,
+            y: 500,
+            width: 32,
+            height: 32,
+            vx: 0,
+            vy: 0,
+            onGround: false,
+            canDoubleJump: true,
+            direction: 1,
+            invulnerable: 0
+        };
+        
+        // Arrays de entidades
+        let platforms = [];
+        let enemies = [];
+        let coins = [];
+        let bananas = [];
+        let puddingProjectiles = [];
+        let keys = [];
+        
+        // Controles
+        const keys = {};
+        let mobileControls = {};
+        
+        // Configurações
+        const GRAVITY = 0.8;
+        const JUMP_FORCE = -15;
+        const MOVE_SPEED = 5;
+        
+        // Event listeners
+        document.addEventListener('keydown', (e) => {
+            keys[e.code] = true;
+            if (e.code === 'Space') e.preventDefault();
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.code] = false;
+        });
+        
+        // Funções de menu
+        function showMainMenu() {
+            hideAllMenus();
+            document.getElementById('main-menu').classList.remove('hidden');
+            gameState = 'menu';
+        }
+        
+        function showInstructions() {
+            hideAllMenus();
+            document.getElementById('instructions-menu').classList.remove('hidden');
+        }
+        
+        function showCredits() {
+            hideAllMenus();
+            document.getElementById('credits-menu').classList.remove('hidden');
+        }
+        
+        function hideAllMenus() {
+            document.querySelectorAll('.menu').forEach(menu => {
+                menu.classList.add('hidden');
             });
         }
+        
+        function startGame() {
+            hideAllMenus();
+            gameState = 'playing';
+            resetGame();
+            gameLoop();
+        }
+        
+        function resetGame() {
+            score = 0;
+            lives = 3;
+            puddings = 3;
+            level = 1;
+            
+            player.x = 100;
+            player.y = 500;
+            player.vx = 0;
+            player.vy = 0;
+            player.onGround = false;
+            player.invulnerable = 0;
+            
+            // Limpar arrays
+            enemies = [];
+            coins = [];
+            bananas = [];
+            puddingProjectiles = [];
+            keys = [];
+            
+            // Criar plataformas da fase 1
+            platforms = [
+                {x: 0, y: 550, width: 800, height: 50},
+                {x: 200, y: 450, width: 150, height: 20},
+                {x: 450, y: 350, width: 150, height: 20},
+                {x: 100, y: 250, width: 100, height: 20},
+                {x: 600, y: 200, width: 100, height: 20}
+            ];
+            
+            // Criar inimigos
+            enemies = [
+                {x: 250, y: 430, width: 20, height: 20, vx: 1, type: 'goomba'},
+                {x: 500, y: 330, width: 20, height: 20, vx: -1, type: 'goomba'}
+            ];
+            
+            // Criar moedas
+            coins = [
+                {x: 225, y: 420, width: 15, height: 15},
+                {x: 475, y: 320, width: 15, height: 15},
+                {x: 625, y: 170, width: 15, height: 15}
+            ];
+            
+            // Criar chave
+            keys = [{x: 650, y: 170, width: 20, height: 20}];
+            
+            updateHUD();
+        }
+        
+        function updateHUD() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('puddings').textContent = puddings;
+            
+            const hearts = document.querySelectorAll('.heart');
+            hearts.forEach((heart, index) => {
+                if (index < lives) {
+                    heart.classList.remove('lost');
+                } else {
+                    heart.classList.add('lost');
+                }
+            });
+        }
+        
+        // Controles mobile
+        function mobileControl(action, pressed = true) {
+            if (action === 'jump' || action === 'banana' || action === 'pudding') {
+                if (action === 'jump') jump();
+                if (action === 'banana') throwBanana();
+                if (action === 'pudding') throwPudding();
+            } else {
+                mobileControls[action] = pressed;
+            }
+        }
+        
+        // Mecânicas do jogo
+        function jump() {
+            if (player.onGround) {
+                player.vy = JUMP_FORCE;
+                player.onGround = false;
+                player.canDoubleJump = true;
+            } else if (player.canDoubleJump) {
+                player.vy = JUMP_FORCE * 0.8;
+                player.canDoubleJump = false;
+            }
+        }
+        
+        function throwBanana() {
+            bananas.push({
+                x: player.x + (player.direction > 0 ? player.width : 0),
+                y: player.y + player.height / 2,
+                vx: player.direction * 8,
+                vy: -3,
+                width: 10,
+                height: 10
+            });
+        }
+        
+        function throwPudding() {
+            if (puddings > 0) {
+                puddingProjectiles.push({
+                    x: player.x + (player.direction > 0 ? player.width : 0),
+                    y: player.y + player.height / 2,
+                    vx: player.direction * 6,
+                    vy: -5,
+                    width: 12,
+                    height: 12
+                });
+                puddings--;
+                updateHUD();
+            }
+        }
+        
+        // Física e colisões
+        function updatePlayer() {
+            // Controles
+            if (keys['ArrowLeft'] || keys['KeyA'] || mobileControls['left']) {
+                player.vx = -MOVE_SPEED;
+                player.direction = -1;
+            } else if (keys['ArrowRight'] || keys['KeyD'] || mobileControls['right']) {
+                player.vx = MOVE_SPEED;
+                player.direction = 1;
+            } else {
+                player.vx *= 0.8;
+            }
+            
+            if (keys['Space'] && !player.spacePressed) {
+                jump();
+                player.spacePressed = true;
+            } else if (!keys['Space']) {
+                player.spacePressed = false;
+            }
+            
+            if (keys['KeyK'] && !player.kPressed) {
+                throwBanana();
+                player.kPressed = true;
+            } else if (!keys['KeyK']) {
+                player.kPressed = false;
+            }
+            
+            if (keys['KeyL'] && !player.lPressed) {
+                throwPudding();
+                player.lPressed = true;
+            } else if (!keys['KeyL']) {
+                player.lPressed = false;
+            }
+            
+            // Física
+            player.vy += GRAVITY;
+            player.x += player.vx;
+            player.y += player.vy;
+            
+            // Colisão com plataformas
+            player.onGround = false;
+            for (let platform of platforms) {
+                if (player.x < platform.x + platform.width &&
+                    player.x + player.width > platform.x &&
+                    player.y < platform.y + platform.height &&
+                    player.y + player.height > platform.y) {
+                    
+                    if (player.vy > 0 && player.y < platform.y) {
+                        player.y = platform.y - player.height;
+                        player.vy = 0;
+                        player.onGround = true;
+                        player.canDoubleJump = true;
+                    }
+                }
+            }
+            
+            // Limites da tela
+            if (player.x < 0) player.x = 0;
+            if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+            if (player.y > canvas.height) {
+                takeDamage();
+            }
+            
+            // Invulnerabilidade
+            if (player.invulnerable > 0) {
+                player.invulnerable--;
+            }
+        }
+        
+        function updateEnemies() {
+            for (let enemy of enemies) {
+                enemy.x += enemy.vx;
+                
+                // Virar na borda da plataforma
+                let onPlatform = false;
+                for (let platform of platforms) {
+                    if (enemy.x + enemy.width > platform.x &&
+                        enemy.x < platform.x + platform.width &&
+                        enemy.y + enemy.height >= platform.y &&
+                        enemy.y < platform.y + platform.height) {
+                        onPlatform = true;
+                        break;
+                    }
+                }
+                
+                if (!onPlatform || enemy.x <= 0 || enemy.x >= canvas.width - enemy.width) {
+                    enemy.vx *= -1;
+                }
+                
+                // Colisão com jogador
+                if (player.invulnerable === 0 &&
+                    player.x < enemy.x + enemy.width &&
+                    player.x + player.width > enemy.x &&
+                    player.y < enemy.y + enemy.height &&
+                    player.y + player.height > enemy.y) {
+                    takeDamage();
+                }
+            }
+        }
+        
+        function updateProjectiles() {
+            // Bananas
+            for (let i = bananas.length - 1; i >= 0; i--) {
+                let banana = bananas[i];
+                banana.x += banana.vx;
+                banana.y += banana.vy;
+                banana.vy += 0.3; // Gravidade
+                
+                // Remover se sair da tela
+                if (banana.x < 0 || banana.x > canvas.width || banana.y > canvas.height) {
+                    bananas.splice(i, 1);
+                    continue;
+                }
+                
+                // Colisão com inimigos
+                for (let j = enemies.length - 1; j >= 0; j--) {
+                    let enemy = enemies[j];
+                    if (banana.x < enemy.x + enemy.width &&
+                        banana.x + banana.width > enemy.x &&
+                        banana.y < enemy.y + enemy.height &&
+                        banana.y + banana.height > enemy.y) {
+                        enemies.splice(j, 1);
+                        bananas.splice(i, 1);
+                        score += 100;
+                        updateHUD();
+                        break;
+                    }
+                }
+            }
+            
+            // Pudins
+            for (let i = puddingProjectiles.length - 1; i >= 0; i--) {
+                let pudding = puddingProjectiles[i];
+                pudding.x += pudding.vx;
+                pudding.y += pudding.vy;
+                pudding.vy += 0.4;
+                
+                if (pudding.x < 0 || pudding.x > canvas.width || pudding.y > canvas.height) {
+                    puddingProjectiles.splice(i, 1);
+                }
+            }
+        }
+        
+        function updateCollectibles() {
+            // Moedas
+            for (let i = coins.length - 1; i >= 0; i--) {
+                let coin = coins[i];
+                if (player.x < coin.x + coin.width &&
+                    player.x + player.width > coin.x &&
+                    player.y < coin.y + coin.height &&
+                    player.y + player.height > coin.y) {
+                    coins.splice(i, 1);
+                    score += 50;
+                    updateHUD();
+                }
+            }
+            
+            // Chaves
+            for (let i = keys.length - 1; i >= 0; i--) {
+                let key = keys[i];
+                if (player.x < key.x + key.width &&
+                    player.x + player.width > key.x &&
+                    player.y < key.y + key.height &&
+                    player.y + player.height > key.y) {
+                    keys.splice(i, 1);
+                    score += 200;
+                    updateHUD();
+                    
+                    // Verificar vitória
+                    if (level === 1) {
+                        nextLevel();
+                    }
+                }
+            }
+        }
+        
+        function takeDamage() {
+            if (player.invulnerable === 0) {
+                lives--;
+                player.invulnerable = 120; // 2 segundos de invulnerabilidade
+                updateHUD();
+                
+                if (lives <= 0) {
+                    gameOver();
+                } else {
+                    // Resetar posição
+                    player.x = 100;
+                    player.y = 500;
+                    player.vx = 0;
+                    player.vy = 0;
+                }
+            }
+        }
+        
+        function nextLevel() {
+            level++;
+            if (level > 3) {
+                victory();
+            } else {
+                // Criar próxima fase (simplificada)
+                resetGame();
+                level = 2;
+            }
+        }
+        
+        function gameOver() {
+            gameState = 'gameOver';
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('game-over-menu').classList.remove('hidden');
+        }
+        
+        function victory() {
+            gameState = 'victory';
+            document.getElementById('victory-score').textContent = score;
+            document.getElementById('victory-menu').classList.remove('hidden');
+        }
+        
+        // Renderização
+        function render() {
+            // Limpar canvas
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Desenhar nuvens
+            ctx.fillStyle = '#FFFFFF';
+            for (let i = 0; i < 5; i++) {
+                let x = i * 160 + 50;
+                let y = 50 + Math.sin(Date.now() * 0.001 + i) * 10;
+                drawCloud(x, y);
+            }
+            
+            // Desenhar plataformas
+            ctx.fillStyle = '#8B4513';
+            for (let platform of platforms) {
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                
+                // Borda superior
+                ctx.fillStyle = '#A0522D';
+                ctx.fillRect(platform.x, platform.y, platform.width, 5);
+                ctx.fillStyle = '#8B4513';
+            }
+            
+            // Desenhar jogador
+            ctx.fillStyle = player.invulnerable > 0 && Math.floor(player.invulnerable / 10) % 2 ? 
+                'rgba(255, 0, 0, 0.5)' : '#FF6B6B';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            
+            // Cabeça careca
+            ctx.fillStyle = '#FFDBAC';
+            ctx.fillRect(player.x + 8, player.y - 8, 16, 16);
+            
+            // Bigode
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(player.x + 10, player.y + 2, 12, 3);
+            
+            // Desenhar inimigos
+            ctx.fillStyle = '#8B4513';
+            for (let enemy of enemies) {
+                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                
+                // Olhos
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(enemy.x + 3, enemy.y + 3, 3, 3);
+                ctx.fillRect(enemy.x + 14, enemy.y + 3, 3, 3);
+                ctx.fillStyle = '#8B4513';
+            }
+            
+            // Desenhar moedas
+            ctx.fillStyle = '#FFD700';
+            for (let coin of coins) {
+                ctx.fillRect(coin.x, coin.y, coin.width, coin.height);
+                
+                // Brilho
+                ctx.fillStyle = '#FFFF00';
+                ctx.fillRect(coin.x + 2, coin.y + 2, coin.width - 4, coin.height - 4);
+                ctx.fillStyle = '#FFD700';
+            }
+            
+            // Desenhar chaves
+            ctx.fillStyle = '#FFD700';
+            for (let key of keys) {
+                ctx.fillRect(key.x, key.y, key.width, key.height);
+                ctx.fillRect(key.x + key.width, key.y + 5, 5, 3);
+                ctx.fillRect(key.x + key.width, key.y + 10, 3, 3);
+            }
+            
+            // Desenhar bananas
+            ctx.fillStyle = '#FFFF00';
+            for (let banana of bananas) {
+                ctx.fillRect(banana.x, banana.y, banana.width, banana.height);
+            }
+            
+            // Desenhar pudins
+            ctx.fillStyle = '#DDA0DD';
+            for (let pudding of puddingProjectiles) {
+                ctx.fillRect(pudding.x, pudding.y, pudding.width, pudding.height);
+            }
+        }
+        
+        function drawCloud(x, y) {
+            ctx.beginPath();
+            ctx.arc(x, y, 20, 0, Math.PI * 2);
+            ctx.arc(x + 25, y, 25, 0, Math.PI * 2);
+            ctx.arc(x + 50, y, 20, 0, Math.PI * 2);
+            ctx.arc(x + 15, y - 15, 15, 0, Math.PI * 2);
+            ctx.arc(x + 35, y - 15, 15, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // Loop principal do jogo
+        function gameLoop() {
+            if (gameState === 'playing') {
+                updatePlayer();
+                updateEnemies();
+                updateProjectiles();
+                updateCollectibles();
+                render();
+                requestAnimationFrame(gameLoop);
+            }
+        }
+        
+        // Inicializar
+        showMainMenu();
     </script>
 </body>
 </html>
