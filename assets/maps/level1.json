@@ -1,0 +1,31 @@
+{
+  "name": "Floresta Encantada",
+  "width": 1600,
+  "height": 600,
+  "playerStart": { "x": 100, "y": 400 },
+  "background": "forest",
+  "platforms": [
+    { "x": 0, "y": 550, "width": 300, "type": "ground" },
+    { "x": 400, "y": 450, "width": 128, "type": "platform" },
+    { "x": 600, "y": 350, "width": 96, "type": "platform" },
+    { "x": 800, "y": 250, "width": 128, "type": "platform" },
+    { "x": 1000, "y": 400, "width": 160, "type": "platform" },
+    { "x": 1200, "y": 300, "width": 96, "type": "platform" },
+    { "x": 1400, "y": 200, "width": 200, "type": "platform" }
+  ],
+  "collectibles": [
+    { "type": "coin", "x": 450, "y": 400 },
+    { "type": "coin", "x": 630, "y": 300 },
+    { "type": "coin", "x": 830, "y": 200 },
+    { "type": "key", "x": 1050, "y": 350 },
+    { "type": "pudding", "x": 1230, "y": 250 },
+    { "type": "coin", "x": 1450, "y": 150 }
+  ],
+  "enemies": [
+    { "type": "goomba", "x": 500, "y": 418, "patrol": { "start": 450, "end": 550 } },
+    { "type": "goomba", "x": 900, "y": 218, "patrol": { "start": 850, "end": 950 } }
+  ],
+  "goal": { "x": 1500, "y": 150, "type": "door" },
+  "requiredKeys": 1
+}
+

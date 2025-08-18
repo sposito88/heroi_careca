@@ -1,0 +1,44 @@
+{
+  "name": "Torre do Castelo",
+  "width": 1200,
+  "height": 800,
+  "playerStart": { "x": 100, "y": 700 },
+  "background": "tower",
+  "platforms": [
+    { "x": 0, "y": 750, "width": 300, "type": "ground" },
+    { "x": 400, "y": 650, "width": 96, "type": "platform" },
+    { "x": 200, "y": 550, "width": 96, "type": "platform" },
+    { "x": 500, "y": 450, "width": 96, "type": "platform" },
+    { "x": 300, "y": 350, "width": 96, "type": "platform" },
+    { "x": 600, "y": 250, "width": 96, "type": "platform" },
+    { "x": 400, "y": 150, "width": 96, "type": "platform" },
+    { "x": 700, "y": 50, "width": 200, "type": "platform" }
+  ],
+  "collectibles": [
+    { "type": "coin", "x": 430, "y": 600 },
+    { "type": "pudding", "x": 230, "y": 500 },
+    { "type": "coin", "x": 530, "y": 400 },
+    { "type": "key", "x": 330, "y": 300 },
+    { "type": "coin", "x": 630, "y": 200 },
+    { "type": "pudding", "x": 430, "y": 100 },
+    { "type": "key", "x": 750, "y": 0 },
+    { "type": "key", "x": 850, "y": 0 }
+  ],
+  "enemies": [
+    { "type": "goomba", "x": 450, "y": 618, "patrol": { "start": 400, "end": 500 } },
+    { "type": "spiker", "x": 250, "y": 518, "patrol": { "start": 200, "end": 300 } },
+    { "type": "goomba", "x": 550, "y": 418, "patrol": { "start": 500, "end": 600 } },
+    { "type": "spiker", "x": 350, "y": 318, "patrol": { "start": 300, "end": 400 } },
+    { "type": "goomba", "x": 650, "y": 218, "patrol": { "start": 600, "end": 700 } }
+  ],
+  "goal": { "x": 800, "y": 0, "type": "princess" },
+  "requiredKeys": 3,
+  "boss": {
+    "type": "gorilla",
+    "x": 750,
+    "y": 18,
+    "health": 5,
+    "attacks": ["throw_barrel", "ground_pound", "charge"]
+  }
+}
+

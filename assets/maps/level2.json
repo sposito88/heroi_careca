@@ -1,0 +1,39 @@
+{
+  "name": "Montanha Rochosa",
+  "width": 2000,
+  "height": 600,
+  "playerStart": { "x": 100, "y": 400 },
+  "background": "mountain",
+  "platforms": [
+    { "x": 0, "y": 550, "width": 200, "type": "ground" },
+    { "x": 300, "y": 480, "width": 64, "type": "platform" },
+    { "x": 450, "y": 400, "width": 64, "type": "platform" },
+    { "x": 600, "y": 320, "width": 96, "type": "platform" },
+    { "x": 800, "y": 240, "width": 64, "type": "platform" },
+    { "x": 950, "y": 350, "width": 128, "type": "platform" },
+    { "x": 1150, "y": 280, "width": 64, "type": "platform" },
+    { "x": 1300, "y": 200, "width": 96, "type": "platform" },
+    { "x": 1500, "y": 120, "width": 64, "type": "platform" },
+    { "x": 1700, "y": 180, "width": 200, "type": "platform" }
+  ],
+  "collectibles": [
+    { "type": "coin", "x": 330, "y": 430 },
+    { "type": "pudding", "x": 480, "y": 350 },
+    { "type": "coin", "x": 630, "y": 270 },
+    { "type": "coin", "x": 830, "y": 190 },
+    { "type": "key", "x": 1000, "y": 300 },
+    { "type": "coin", "x": 1180, "y": 230 },
+    { "type": "pudding", "x": 1330, "y": 150 },
+    { "type": "key", "x": 1530, "y": 70 },
+    { "type": "coin", "x": 1750, "y": 130 }
+  ],
+  "enemies": [
+    { "type": "goomba", "x": 400, "y": 448, "patrol": { "start": 350, "end": 500 } },
+    { "type": "goomba", "x": 700, "y": 288, "patrol": { "start": 650, "end": 750 } },
+    { "type": "goomba", "x": 1200, "y": 248, "patrol": { "start": 1150, "end": 1250 } },
+    { "type": "spiker", "x": 1400, "y": 168, "patrol": { "start": 1350, "end": 1450 } }
+  ],
+  "goal": { "x": 1800, "y": 130, "type": "door" },
+  "requiredKeys": 2
+}
+
